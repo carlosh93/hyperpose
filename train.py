@@ -26,7 +26,7 @@ if __name__ == '__main__':
                         help="model backbone, available options: Mobilenet, Vggtiny, Vgg19, Resnet18, Resnet50")
     parser.add_argument("--model_name",
                         type=str,
-                        default="default_name",
+                        default="openpose",
                         help="model name,to distinguish model and determine model dir")
     parser.add_argument("--dataset_type",
                         type=str,
@@ -34,7 +34,7 @@ if __name__ == '__main__':
                         help="dataset name,to determine which dataset to use, available options: MSCOCO, MPII ")
     parser.add_argument("--dataset_path",
                         type=str,
-                        default="data",
+                        default="/content/data/",
                         help="dataset path,to determine the path to load the dataset")
     parser.add_argument('--train_type',
                         type=str,
