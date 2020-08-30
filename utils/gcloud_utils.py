@@ -4,6 +4,11 @@ import tensorflow as tf
 import os
 storage_client = storage.Client()
 
+resolver = tf.distribute.cluster_resolver.TPUClusterResolver(tpu='grpc://' + os.environ['COLAB_TPU_ADDR'])
+tf.config.experimental_connect_to_cluster(resolver)
+# This is the TPU initialization code that has to be at the beginning.
+tf.tpu.experimental.initialize_tpu_system(resolver)
+
 
 def list_blobs(bucket_name):
     """Lists all the blobs in the bucket."""
@@ -21,9 +26,6 @@ def gcs_file_exists(bucket_name, file_path):
 
 
 def get_tpu_resolver():
-    resolver = tf.distribute.cluster_resolver.TPUClusterResolver(tpu='grpc://' + os.environ['COLAB_TPU_ADDR'])
-    tf.config.experimental_connect_to_cluster(resolver)
-    # This is the TPU initialization code that has to be at the beginning.
-    tf.tpu.experimental.initialize_tpu_system(resolver)
+
     print("All devices: ", tf.config.list_logical_devices('TPU'))
     return resolver
