@@ -44,3 +44,58 @@ def get_eval_dataset(val_imgs_path,val_anns_path,dataset_filter=None):
 
     eval_dataset = tf.data.Dataset.from_generator(generator,output_types=(tf.string,tf.int32))
     return eval_dataset
+
+
+def save_train_tfrecord_dataset(train_imgs_path, train_anns_path, dataset_filter=None, input_kpt_cvter=lambda x: x):
+    def _bytes_feature(value):
+        """Returns a bytes_list from a string / byte."""
+        if isinstance(value, type(tf.constant(0))):
+            value = value.numpy()  # BytesList won't unpack a string from an EagerTensor.
+        return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
+
+    def serialize_example(feature0, feature1, feature2):
+        """
+      Creates a tf.train.Example message ready to be written to a file.
+      """
+        # Create a dictionary mapping the feature name to the tf.train.Example-compatible
+        # data type.
+        feature = {
+            'img_path': _bytes_feature(feature0),
+            'raw_img': _bytes_feature(feature1),
+            'target': _bytes_feature(feature2),
+        }
+
+        # Create a Features message using tf.train.Example.
+
+        example_proto = tf.train.Example(features=tf.train.Features(feature=feature))
+        return example_proto.SerializeToString()
+
+    # read coco training images contains valid people
+    data = PoseInfo(train_imgs_path, train_anns_path, with_mask=True, dataset_filter=dataset_filter)
+    img_paths_list = data.get_image_list()
+    kpts_list = data.get_kpt_list()
+    mask_list = data.get_mask_list()
+    bbx_list = data.get_bbx_list()
+    target_list = []
+    for kpts, mask, bbx in zip(kpts_list, mask_list, bbx_list):
+        for p_idx in range(0, len(kpts)):
+            kpts[p_idx] = input_kpt_cvter(kpts[p_idx])
+        target_list.append({
+            "kpt": kpts,
+            "mask": mask,
+            "bbx": bbx
+        })
+    train_img_paths_list = img_paths_list
+    train_target_list = target_list
+
+    tfrecord_file = 'coco_pose_data.tfrecord'
+    assert len(train_img_paths_list) == len(train_target_list)
+    ldat = 0
+    with tf.io.TFRecordWriter(tfrecord_file) as writer:
+        for _input, _target in zip(train_img_paths_list, train_target_list):
+            img_string = open(_input, 'rb').read()
+            example = serialize_example(_input.encode('utf-8'), img_string, cPickle.dumps(_target))
+            writer.write(example)
+            ldat += 1
+
+    print("Total saved examples: {}".format(ldat))

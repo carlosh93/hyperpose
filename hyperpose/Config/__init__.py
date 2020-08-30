@@ -33,7 +33,7 @@ def get_config():
     '''
     #import basic configurations
     if(update_model.model_type==MODEL.Openpose):
-        from .config_opps import model,train,eval,data,log
+        from .config_opps import model,train,eval,data,log,gcs
     elif(update_model.model_type==MODEL.LightweightOpenpose):
         from .config_lopps import model,train,eval,data,log
     elif(update_model.model_type==MODEL.MobilenetThinOpenpose):
@@ -53,6 +53,7 @@ def get_config():
     config.eval=eval
     config.data=data
     config.log=log
+    config.gcs=gcs
     #path configure
     tl.files.exists_or_mkdir(config.model.model_dir, verbose=True)  # to save model files 
     tl.files.exists_or_mkdir(config.train.vis_dir, verbose=True)  # to save visualization results
@@ -213,6 +214,7 @@ def set_train_type(train_type):
         a enum value of enum class Config.TRAIN,available options:
 |           Config.TRAIN.Single_train
 |           Config.TRAIN.Parallel_train
+            Config.TRAIN.TPU_train
     
     Returns
     -------

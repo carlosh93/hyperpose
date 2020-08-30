@@ -12,7 +12,7 @@ from .prepare import prepare_dataset
 from .visualize import visualize
 from .format import CocoMeta,PoseInfo
 from .define import CocoPart,CocoColor
-from .generate import get_train_dataset, get_eval_dataset
+from .generate import get_train_dataset, get_eval_dataset, save_train_tfrecord_dataset
 
 def init_dataset(config):
     dataset=MSCOCO_dataset(config)
@@ -136,6 +136,9 @@ class MSCOCO_dataset:
             a unifrom formated tensorflow dataset object for training
         '''
         return get_train_dataset(self.train_imgs_path,self.train_anns_path,self.dataset_filter,self.input_kpt_cvter)
+
+    def save_train_tfrecord_dataset(self):
+        return save_train_tfrecord_dataset(self.train_imgs_path, self.train_anns_path, self.dataset_filter, self.input_kpt_cvter)
 
     def get_eval_dataset(self):
         '''provide uniform tensorflow dataset for evaluating

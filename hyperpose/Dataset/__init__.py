@@ -54,7 +54,8 @@ def get_dataset(config):
             from .mscoco_dataset.define import ppn_input_converter as input_kpt_cvter
             from .mscoco_dataset.define import ppn_output_converter as output_kpt_cvter
         dataset=MSCOCO_dataset(config,input_kpt_cvter,output_kpt_cvter)
-        dataset.prepare_dataset()
+        if config.train.train_type!=TRAIN.TPU_train:
+            dataset.prepare_dataset()
     elif(dataset_type==DATA.MPII):
         print("using Mpii dataset!")
         if(model_type==MODEL.LightweightOpenpose or model_type==MODEL.MobilenetThinOpenpose or model_type==MODEL.Openpose):

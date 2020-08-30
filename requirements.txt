@@ -5,3 +5,4 @@ numpy
 pycocotools
 easydict
 opencv-python
+google-cloud-storage

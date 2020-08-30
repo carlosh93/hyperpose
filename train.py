@@ -13,6 +13,7 @@ import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from hyperpose import Config,Model,Dataset
+from utils.gcloud_utils import get_tpu_resolver
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='FastPose.')
@@ -34,12 +35,12 @@ if __name__ == '__main__':
                         help="dataset name,to determine which dataset to use, available options: MSCOCO, MPII ")
     parser.add_argument("--dataset_path",
                         type=str,
-                        default="/content/data/",
+                        default="data",
                         help="dataset path,to determine the path to load the dataset")
     parser.add_argument('--train_type',
                         type=str,
-                        default="Single_train",
-                        help='train type, available options: Single_train, Parallel_train')
+                        default="TPU_train",
+                        help='train type, available options: Single_train, Parallel_train, TPU_train')
     parser.add_argument('--learning_rate',
                         type=float,
                         default=1e-4,
@@ -64,7 +65,13 @@ if __name__ == '__main__':
     
     #train
     config=Config.get_config()
-    model=Model.get_model(config)
+    if args.train_type == "TPU_train":
+        resolver = get_tpu_resolver()
+        strategy = tf.distribute.TPUStrategy(resolver)
+        with strategy.scope():
+            model=Model.get_model(config)
+    else:
+        model = Model.get_model(config)
     train=Model.get_train(config)
     dataset=Dataset.get_dataset(config)
     train(model,dataset)

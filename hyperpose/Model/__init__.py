@@ -128,7 +128,7 @@ def get_train(config):
     # determine train process
     model_type=config.model.model_type
     if model_type == MODEL.Openpose or model_type == MODEL.LightweightOpenpose or model_type==MODEL.MobilenetThinOpenpose:
-        from .openpose import single_train,parallel_train
+        from .openpose import single_train,parallel_train, tpu_train
     elif model_type == MODEL.PoseProposal:
         from .pose_proposal import single_train,parallel_train
     else:
@@ -144,6 +144,8 @@ def get_train(config):
         if("kungfu_option" not in config.train):
             config.train.kungfu_option=KUNGFU.Sma
         train=partial(parallel_train,config=config)
+    elif(train_type==TRAIN.TPU_train and model_type!=MODEL.PoseProposal):
+        train=partial(tpu_train,config=config)
     print(f"using {train_type.name}...")
     return train
 

@@ -23,6 +23,7 @@ class DATA(Enum):
 class TRAIN(Enum):
     Single_train=0
     Parallel_train=1
+    TPU_train=2
 
 class KUNGFU(Enum):
     Sync_sgd=0
