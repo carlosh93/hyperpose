@@ -301,8 +301,8 @@ def tpu_train(train_model, dataset, config):
         # Parse the input `tf.train.Example` proto using the dictionary obtained by get_features_description.
         return tf.io.parse_single_example(example_proto, get_features_description())
 
-    if not gcs_file_exists(config.gcs.bucket_name, config.gcs.train_tfrecord_name):
-        raise Exception("TF record not found, please run transform_coco2tfrecords.py first")
+    #if not gcs_file_exists(config.gcs.bucket_name, config.gcs.train_tfrecord_name):
+    #    raise Exception("TF record not found, please run transform_coco2tfrecords.py first")
 
     raw_image_dataset = tf.data.TFRecordDataset(config.gcs.train_tfrecord_path)
     parsed_image_dataset = raw_image_dataset.map(_parse_function)
